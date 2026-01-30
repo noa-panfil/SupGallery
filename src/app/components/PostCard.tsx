@@ -38,17 +38,7 @@ interface PostProps {
     }
 }
 
-// ... inside render ...
 
-<div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
-    par {post.user.name}
-    {post.user.badges?.includes('TOP_POSTER') && (
-        <FiTrendingUp style={{ marginLeft: '0.5rem', color: '#10b981' }} title="Top Poster" />
-    )}
-    {post.user.badges?.includes('MOST_LIKED') && (
-        <FiAward style={{ marginLeft: '0.5rem', color: '#f59e0b' }} title="Le plus liké" />
-    )}
-</div>
 
 export default function PostCard({ post: initialPost }: PostProps) {
     const { data: session } = useSession();
@@ -179,8 +169,14 @@ export default function PostCard({ post: initialPost }: PostProps) {
                     <div style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1.2, color: 'var(--foreground)' }}>
                         {post.title || 'Sans titre'}
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
                         par {post.user.name}
+                        {post.user.badges?.includes('TOP_POSTER') && (
+                            <FiTrendingUp style={{ marginLeft: '0.5rem', color: '#10b981' }} title="Top Poster" />
+                        )}
+                        {post.user.badges?.includes('MOST_LIKED') && (
+                            <FiAward style={{ marginLeft: '0.5rem', color: '#f59e0b' }} title="Le plus liké" />
+                        )}
                     </div>
                 </div>
 
