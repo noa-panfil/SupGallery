@@ -32,6 +32,10 @@ export default function Home() {
     useEffect(() => {
         if (status === 'authenticated') {
             fetchPosts();
+            const interval = setInterval(() => {
+                fetchPosts();
+            }, 5000);
+            return () => clearInterval(interval);
         } else if (status === 'unauthenticated') {
             setLoading(false);
         }

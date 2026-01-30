@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiMessageSquare, FiDownload, FiShare2, FiHeart, FiPlay, FiTrash2 } from 'react-icons/fi';
 import { useSession } from 'next-auth/react';
@@ -49,6 +49,13 @@ export default function PostCard({ post: initialPost }: PostProps) {
     const [isLiked, setIsLiked] = useState(initialPost.isLiked);
     const [isLikeLoading, setIsLikeLoading] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
+
+    useEffect(() => {
+        setPost(initialPost);
+        setLikeCount(initialPost._count.likes);
+        setCommentCount(initialPost._count.comments);
+        setIsLiked(initialPost.isLiked);
+    }, [initialPost]);
 
     const handleDelete = async () => {
         if (!window.confirm('Voulez-vous vraiment supprimer ce post ?')) return;
