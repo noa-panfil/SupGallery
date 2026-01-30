@@ -16,6 +16,7 @@ interface Post {
     user: {
         name: string;
         image: string | null;
+        badges?: string[];
     };
     _count: {
         comments: number;

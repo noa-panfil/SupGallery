@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         // Also checking if the current user liked the post
         const query = `
         SELECT 
-            p.id, p.title, p.description, p.mediaUrl, p.mediaType, p.createdAt,
+            p.id, p.title, p.description, p.mediaUrl, p.mediaType, p.createdAt, p.userId,
             u.name as userName, u.image as userImage,
             COUNT(DISTINCT c.id) as commentCount,
             COUNT(DISTINCT l.userId) as likeCount,
@@ -37,11 +37,31 @@ export async function GET(request: Request) {
 
         const [rows] = await pool.execute<RowDataPacket[]>(query);
 
+        // Calculate Stats for Badges
+        const [topPosterRes] = await pool.execute<RowDataPacket[]>(
+            'SELECT userId FROM posts GROUP BY userId ORDER BY COUNT(*) DESC LIMIT 1'
+        );
+        const topPosterId = topPosterRes[0]?.userId;
+
+        const [mostLikedRes] = await pool.execute<RowDataPacket[]>(
+            `SELECT p.userId 
+             FROM likes l 
+             JOIN posts p ON l.postId = p.id 
+             GROUP BY p.userId 
+             ORDER BY COUNT(*) DESC LIMIT 1`
+        );
+        const mostLikedId = mostLikedRes[0]?.userId;
+
+
         const postsWithTags = await Promise.all(rows.map(async (post) => {
             const [tags] = await pool.execute<RowDataPacket[]>(
                 'SELECT t.name FROM tags t JOIN post_tags pt ON t.id = pt.tagId WHERE pt.postId = ?',
                 [post.id]
             );
+
+            const badges = [];
+            if (post.userId === topPosterId) badges.push('TOP_POSTER');
+            if (post.userId === mostLikedId) badges.push('MOST_LIKED');
 
             return {
                 id: post.id,
@@ -52,7 +72,8 @@ export async function GET(request: Request) {
                 createdAt: post.createdAt,
                 user: {
                     name: post.userName,
-                    image: post.userImage
+                    image: post.userImage,
+                    badges
                 },
                 _count: {
                     comments: post.commentCount,

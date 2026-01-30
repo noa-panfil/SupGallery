@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FiMessageSquare, FiDownload, FiShare2, FiHeart, FiPlay, FiTrash2 } from 'react-icons/fi';
+import { FiMessageSquare, FiDownload, FiShare2, FiHeart, FiPlay, FiTrash2, FiAward, FiTrendingUp } from 'react-icons/fi';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
@@ -27,6 +27,7 @@ interface PostProps {
         user: {
             name: string;
             image: string | null;
+            badges?: string[];
         };
         _count: {
             comments: number;
@@ -36,6 +37,18 @@ interface PostProps {
         tags: { name: string }[];
     }
 }
+
+// ... inside render ...
+
+<div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+    par {post.user.name}
+    {post.user.badges?.includes('TOP_POSTER') && (
+        <FiTrendingUp style={{ marginLeft: '0.5rem', color: '#10b981' }} title="Top Poster" />
+    )}
+    {post.user.badges?.includes('MOST_LIKED') && (
+        <FiAward style={{ marginLeft: '0.5rem', color: '#f59e0b' }} title="Le plus liké" />
+    )}
+</div>
 
 export default function PostCard({ post: initialPost }: PostProps) {
     const { data: session } = useSession();
